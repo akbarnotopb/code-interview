@@ -1,0 +1,57 @@
+version: '3'
+
+networks:
+  inosoft:
+
+services:
+  nginx:
+    container_name: inosoft-nginx
+    build:
+      context: .
+      dockerfile: nginx.dockerfile
+      args:
+        - NGINXUSER=${NGINXUSER:-www-data}
+        - NGINXGROUP=${NGINXGROUP:-www-data}
+    depends_on:
+      - php
+      - mysql
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html:delegated
+    networks:
+      - inosoft
+
+  mysql:
+    image: mysql:5.7.22
+    container_name: inosoft-mysql
+    ports:
+      - "3036:3036"
+    volumes:
+      - ./mysql:/var/lib/mysql
+#    user: "1000:1000"
+    environment:
+      MYSQL_DATABASE: homestead
+      MYSQL_USER: homestead
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - inosoft
+    
+  php:
+    container_name: inosoft-php74
+    build: 
+      context: .
+      dockerfile: php.dockerfile
+      args:
+        - PHPUSER=${PHPUSER:-www-data}
+        - PHPGROUP=${PHPGROUP:-www-data}
+#    user: "1000:1000"
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "9000:9000"
+    networks:
+      - inosoft
