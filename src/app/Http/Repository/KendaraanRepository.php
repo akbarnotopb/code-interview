@@ -28,6 +28,7 @@ class KendaraanRepository {
     }
 
     public function store($datas){
+        // parameter is validated on controller
         if($kendaraan = Kendaraan::create($datas)){
             return $kendaraan;
         }

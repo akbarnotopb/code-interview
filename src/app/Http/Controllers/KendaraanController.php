@@ -44,6 +44,8 @@ class KendaraanController extends Controller
 
         if($validator->fails()){
             return response()->json(["message"=> $validator->errors()->first(), "kendaraan" => null],400);
+        }else if($request->suspensi && $request->kapasitas){
+            return response()->json(["message"=> "Mobil atau motor? pilih salah satu!", "kendaraan" => null],400);
         }
 
         $request["stok"]        = (int)$request["stok"];

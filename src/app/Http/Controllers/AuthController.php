@@ -5,11 +5,28 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Service\AuthenticationService;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     //
     public function login(Request $request){
+
+        $rules      = [
+            "email"             => "required|email",
+            "password"          => "required"
+        ];
+        $message    = [
+            "required"          => ":attribute wajib diisi",
+            "email"             => ":attribute wajib berupa e-mail",
+        ];
+
+        $validator  = Validator::make($request->all(), $rules, $message);
+
+        if($validator->fails()){
+            return response()->json(["message"=> $validator->errors()->first(), "user" => null],400);
+        }
+
         if($token = (new AuthenticationService())->login($request->only(["email","password"]))){
             return response()->json(["user"=>auth()->user(), "token" => $token]);
         }else{
