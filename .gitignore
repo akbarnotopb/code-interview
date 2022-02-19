@@ -1,2 +1,2 @@
-mysql/*
-!mysql/*.md
+mongodb/*
+!mongodb/*.md

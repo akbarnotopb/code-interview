@@ -14,7 +14,7 @@ services:
         - NGINXGROUP=${NGINXGROUP:-www-data}
     depends_on:
       - php
-      - mysql
+      - mongo
     ports:
       - "8080:80"
     volumes:
@@ -22,33 +22,43 @@ services:
     networks:
       - inosoft
 
-  mysql:
-    image: mysql:5.7.22
-    container_name: inosoft-mysql
-    ports:
-      - "3036:3036"
-    volumes:
-      - ./mysql:/var/lib/mysql
-#    user: "1000:1000"
+#   mysql:
+#     image: mysql:5.7.22
+#     container_name: inosoft-mysql
+#     ports:
+#       - "3036:3036"
+#     volumes:
+#       - ./mysql:/var/lib/mysql
+# #    user: "1000:1000"
+#     environment:
+#       MYSQL_DATABASE: homestead
+#       MYSQL_USER: homestead
+#       MYSQL_PASSWORD: secret
+#       MYSQL_ROOT_PASSWORD: secret
+#       SERVICE_TAGS: dev
+#       SERVICE_NAME: mysql
+#     networks:
+#       - inosoft
+  mongo:
+    container_name: inosoft-mongodb
+    image: mongo:4.2-bionic
     environment:
-      MYSQL_DATABASE: homestead
-      MYSQL_USER: homestead
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: secret
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+        - ./mongodb:/data/db
     networks:
       - inosoft
-    
+
   php:
-    container_name: inosoft-php74
+    container_name: inosoft-php
     build: 
       context: .
       dockerfile: php.dockerfile
       args:
         - PHPUSER=${PHPUSER:-www-data}
         - PHPGROUP=${PHPGROUP:-www-data}
-#    user: "1000:1000"
+    user: "1000:1000"
     volumes:
       - ./src:/var/www/html
     ports:

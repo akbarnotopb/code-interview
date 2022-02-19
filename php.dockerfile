@@ -1,8 +1,11 @@
-FROM php:7.4-fpm-alpine
+FROM php:8.0-fpm-alpine
 
-RUN apk add --no-cache libpng libpng-dev libzip-dev
 
-RUN docker-php-ext-install pdo pdo_mysql gd
+RUN apk --update add --virtual build-dependencies build-base openssl-dev autoconf \
+  && pecl install mongodb \
+  && docker-php-ext-enable mongodb \
+  && apk del build-dependencies build-base openssl-dev autoconf \
+  && rm -rf /var/cache/apk/*
 
 
 ARG PHPGROUP
